@@ -6,5 +6,8 @@ FactoryBot.define do
     crm_id { Faker::Number.unique.number(digits: 10) }
     email { Faker::Internet.unique.email }
     segment { Faker::Commerce.department }
+    country { Faker::Address.country }
+    province { Faker::Address.state }
+    zip { Faker::Address.zip_code }
   end
 end
