@@ -41,6 +41,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   gem 'faker', '~> 2.18'
   gem 'rubocop', require: false
+  gem 'simplecov'
 end
 
 group :development do
