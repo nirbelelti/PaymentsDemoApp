@@ -1,0 +1,47 @@
+require_dependency 'organisation_facade'
+
+class Api::V1::OrganisationsController < ApplicationController
+  before_action :set_organisation, only: %i[show update destroy]
+
+  def index
+    organisations = OrganisationFacade.all_organisations
+    render json: organisations
+  end
+
+  def show
+    render json: @organisation
+  end
+
+  def create
+    organisation = OrganisationFacade.create_organisation(organisation_params)
+    render json: organisation, status: :created
+  end
+
+  def update
+    if OrganisationFacade.update_organisation(@organisation, organisation_params)
+      render json: @organisation
+    else
+      render json: @organisation.errors, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    OrganisationFacade.delete_organisation(@organisation)
+  end
+
+  private
+
+  def set_organisation
+    @organisation = OrganisationFacade.find_organisation(params[:id])
+  end
+
+  def organisation_params
+    params.require(:organisation).permit(:name,
+                                         :address,
+                                         :vat_id,
+                                         :crm_id,
+                                         :email,
+                                         :segment)
+  end
+
+end
