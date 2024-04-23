@@ -30,6 +30,11 @@ RSpec.describe "Api::V1::Payments", type: :request do
       expect(json['metadata']['count']).to eq(40)
       expect(json['metadata']['items']).to eq(20)
     end
+
+    it 'filters the results by organisation_id' do
+      get '/api/v1/payments', params: { query: {organisation_id: organisation.id} }
+      expect(json['payments'].size).to eq(1)
+    end
   end
 
   describe "GET /show" do
@@ -57,9 +62,9 @@ RSpec.describe "Api::V1::Payments", type: :request do
       before { post '/api/v1/payments', params: { payment: valid_attributes } }
 
       it 'creates an payment' do
-        # expect(json['organisation_id']).to eq(valid_attributes[:organisation_id])
-        # expect(json['sender_id']).to eq(valid_attributes[:sender_id])
-        # expect(json['receiver_id']).to eq(valid_attributes[:receiver_id])
+        expect(json['organisation_id']).to eq(valid_attributes[:organisation_id])
+        expect(json['sender_id']).to eq(valid_attributes[:sender_id])
+        expect(json['receiver_id']).to eq(valid_attributes[:receiver_id])
         expect(json['amount']).to eq(valid_attributes[:amount])
       end
 
