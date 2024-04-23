@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Api::V1::Payments", type: :request do
-  let!(:payments) { FactoryBot.create_list(:payment, 3) }
+  let!(:payments) { FactoryBot.create_list(:payment, 40) }
   let!(:payment) { payments.first }
   let!(:organisation) { payment.organisation }
 
@@ -14,11 +14,21 @@ RSpec.describe "Api::V1::Payments", type: :request do
 
     it 'returns payments' do
       expect(json).not_to be_empty
-      expect(json.size).to eq(3)
+      expect(json.size).to eq(2)
+      expect(json['payments'].size).to eq(20)
     end
 
     it 'returns status code 200' do
       expect(response).to have_http_status(200)
+    end
+
+    it 'it paginating the results and returns page metadata' do
+      expect(json['metadata']).not_to be_empty
+      expect(json['metadata']['page']).to eq(1)
+      expect(json['metadata']['next']).to eq(2)
+      expect(json['metadata']['last']).to eq(2)
+      expect(json['metadata']['count']).to eq(40)
+      expect(json['metadata']['items']).to eq(20)
     end
   end
 
