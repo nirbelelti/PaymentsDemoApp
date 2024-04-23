@@ -15,6 +15,7 @@ class Organisation < ApplicationRecord
         name: org.name,
         address: org.address,
         crm_id: org.crm_id,
+        segment: org.segment,
         last_payments: last_three_payments_hash.presence || 'No Payments'
       }
     end
