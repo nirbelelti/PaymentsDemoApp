@@ -17,7 +17,7 @@ class OrganisationFacade
   end
 
   def self.all_organisations
-    Organisation.all
+    Organisation.with_last_three_payments
   end
 
 end
