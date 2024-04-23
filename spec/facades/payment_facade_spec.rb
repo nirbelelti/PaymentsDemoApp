@@ -5,25 +5,31 @@ RSpec.describe PaymentFacade, type: :facade do
   let!(:payment) { payments.first }
   let(:payment_params) { FactoryBot.attributes_for(:payment, organisation_id: Organisation.first.id  ) }
 
-  describe '.all_payments' do
+  describe 'all_payments' do
     it 'returns all payments' do
       expect(described_class.all_payments.to_a).to match_array(payments)
+      expect(described_class.all_payments.length).to eq(3)
+    end
+
+    it 'filters the results by organisation_id' do
+      expect(described_class.all_payments(organisation_id: payment.organisation_id).to_a).to eq([payment])
+      expect(described_class.all_payments(organisation_id: payment.organisation_id).length).to eq(1)
     end
   end
 
-  describe '.find_payment' do
+  describe 'find_payment' do
     it 'returns the payment' do
       expect(described_class.find_payment(payment.id)).to eq(payment)
     end
   end
 
-  describe '.create_payment' do
+  describe 'create_payment' do
     it 'creates a new payment' do
       expect { described_class.create_payment(payment_params) }.to change(Payment, :count).by(1)
     end
   end
 
-  describe '.update_payment' do
+  describe 'update_payment' do
     it 'updates the payment' do
       described_class.update_payment(payment.id, payment_params)
       payment.reload
@@ -31,7 +37,7 @@ RSpec.describe PaymentFacade, type: :facade do
     end
   end
 
-  describe '.delete_payment' do
+  describe 'delete_payment' do
     it 'deletes the payment' do
       described_class.delete_payment(payment.id)
       expect(Payment.exists?(payment.id)).to be_falsey
