@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Api::V1::Organisations", type: :request do
   let!(:organisations) { FactoryBot.create_list(:organisation, 3) }
+  let!(:organisation) { organisations.first }
 
   def json
     JSON.parse(response.body)
@@ -21,13 +22,13 @@ RSpec.describe "Api::V1::Organisations", type: :request do
   end
 
   describe "GET /show" do
-    before { get "/api/v1/organisations/#{organisations.first.id}" }
+    before { get "/api/v1/organisations/#{organisation.id}" }
 
     it 'returns the organisation' do
       expect(json).not_to be_empty
-      expect(json['id']).to eq(organisations.first.id)
-      expect(json['name']).to eq(organisations.first.name)
-      expect(json['crm_id']).to eq(organisations.first.crm_id)
+      expect(json['id']).to eq(organisation.id)
+      expect(json['name']).to eq(organisation.name)
+      expect(json['crm_id']).to eq(organisation.crm_id)
     end
 
     it 'returns status code 200' do
@@ -63,7 +64,7 @@ RSpec.describe "Api::V1::Organisations", type: :request do
     let(:valid_attributes) { { name: 'New Name' } }
 
     context 'with valid attributes' do
-      before { patch "/api/v1/organisations/#{organisations.first.id}", params: { organisation: valid_attributes } }
+      before { patch "/api/v1/organisations/#{organisation.id}", params: { organisation: valid_attributes } }
 
       it 'updates the organisation' do
         expect(json['name']).to eq('New Name')
