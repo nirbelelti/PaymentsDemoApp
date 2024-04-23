@@ -19,7 +19,8 @@ class Api::V1::PaymentsController < ApplicationController
   end
 
   def update
-    if PaymentFacade.update_payment(@payment, payment_params)
+    if PaymentFacade.update_payment(@payment.id, payment_params)
+      @payment.reload
       render json: @payment
     else
       render json: @payment.errors, status: :unprocessable_entity
