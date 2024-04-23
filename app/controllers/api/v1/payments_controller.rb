@@ -5,8 +5,8 @@ class Api::V1::PaymentsController < ApplicationController
   before_action :set_payment, only: %i[ show update destroy ]
 
   def index
-    payments = PaymentFacade.all_payments
-    render json: payments
+    @pagy, payments = pagy(PaymentFacade.all_payments)
+    render json: { payments: payments, metadata: pagy_metadata(@pagy) }
   end
 
   def show
