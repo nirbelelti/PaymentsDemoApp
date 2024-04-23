@@ -1,7 +1,11 @@
 class PaymentFacade
 
-  def self.all_payments
-    Payment.all
+  def self.all_payments(query_params = {})
+    if query_params && query_params[:organisation_id].present?
+      Payment.where(organisation_id: query_params[:organisation_id])
+    else
+      Payment.all
+    end
   end
 
   def self.find_payment(payment_id)
