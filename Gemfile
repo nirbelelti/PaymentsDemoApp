@@ -34,6 +34,8 @@ gem "bootsnap", require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 # gem "rack-cors"
+# Add pagy pagination for the project #https://ddnexus.github.io/pagy/
+gem 'pagy'
 
 group :development, :test do
   gem 'rspec-rails', '~> 6.1.0'
@@ -50,8 +52,11 @@ group :development do
 end
 
 group :test do
+  # Adds factory_bot methods, like `create`, `build`, `attributes_for`
   gem 'factory_bot_rails'
+  # Adds shoulda matchers methods, like `validate_presence_of`, `validate_uniqueness_of`
   gem 'shoulda-matchers'
+  # Adds database_cleaner methods, like `clean_with`, `cleaning`
   gem 'database_cleaner'
 end
 
