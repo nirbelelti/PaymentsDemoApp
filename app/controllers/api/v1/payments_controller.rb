@@ -5,7 +5,7 @@ class Api::V1::PaymentsController < ApplicationController
   before_action :set_payment, only: %i[ show update destroy ]
 
   def index
-    @pagy, payments = pagy(PaymentFacade.all_payments)
+    @pagy, payments = pagy(PaymentFacade.all_payments(query_params))
     render json: { payments: payments, metadata: pagy_metadata(@pagy) }
   end
 
@@ -37,6 +37,10 @@ class Api::V1::PaymentsController < ApplicationController
     @payment = PaymentFacade.find_payment(params[:id])
   end
 
+  def query_params
+    params.fetch(:query, {}).permit(:organisation_id)
+  end
+  
   def payment_params
     params.require(:payment).permit(:organisation_id,
                                     :sender_id,
