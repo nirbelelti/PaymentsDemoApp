@@ -75,4 +75,21 @@ RSpec.describe "Api::V1::Organisations", type: :request do
       end
     end
   end
+
+  describe "Transfer Payment" do
+    let!(:organisation_b) { FactoryBot.create(:organisation) }
+    let(:valid_attributes) { { to_organisation_id: organisation_b.id, amount: 100 } }
+
+    before { post "/api/v1/organisations/#{organisation.id}/transfer_payment", params: valid_attributes }
+
+    it 'transfer payments between two organisations' do
+      expect(json['amount']).to eq(100)
+      expect(json['sender_id']).to eq(organisation.id)
+      expect(json['receiver_id']).to eq(organisation_b.id)
+    end
+
+    it 'returns status code 201' do
+      expect(response).to have_http_status(201)
+    end
+  end
 end
