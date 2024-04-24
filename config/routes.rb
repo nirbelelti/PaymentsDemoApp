@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      resources :organisations
+      resources :organisations do
+        post :transfer_payment, on: :member
+      end
       resources :payments
     end
   end
