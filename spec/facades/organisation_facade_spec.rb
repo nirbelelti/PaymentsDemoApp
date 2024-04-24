@@ -37,4 +37,11 @@ RSpec.describe OrganisationFacade, type: :facade do
       expect(Organisation.exists?(organisation.id)).to be_falsey
     end
   end
+
+  describe '.transfer_payment' do
+    let!(:organisation_b) { FactoryBot.create(:organisation) }
+    it 'transfer payments between two organisations' do
+      expect {described_class.transfer_payment(organisation.id, organisation_b.id, 100) }.to change(Payment, :count).by(1)
+    end
+  end
 end
