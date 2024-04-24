@@ -97,8 +97,9 @@ Attributes for the organisation model include:
 - segment: the segment of the organisation (*required*)
 - crm_id: the CRM id of the organisation (*required*)
 
-Transfer payment endpoint allows you to transfer payment from one organisation to another. 
-it requires the following parameters:
+The endpoint `POST /api/v1/organisations/:id/transfer_payment` allows you to transfer payment from one organisation to another. 
+This action is based on the assumption that they have the resources to make the payment. 
+To transfer payment, it requires the following parameters:
 - amount: the amount of the payment (*required*)
 - receiver_id: the id of the receiver (*required*)
 
