@@ -29,10 +29,25 @@ class Api::V1::OrganisationsController < ApplicationController
     OrganisationFacade.delete_organisation(@organisation)
   end
 
+  def transfer_payment
+    payment = OrganisationFacade.transfer_payment(transfer_payment_params[:id], 
+                                                  transfer_payment_params[:to_organisation_id],
+                                                  transfer_payment_params[:amount])
+    if payment.errors.any?
+      render json: payment.errors, status: :unprocessable_entity
+    else
+      render json: payment, status: :created
+    end
+  end
+
   private
 
   def set_organisation
     @organisation = OrganisationFacade.find_organisation(params[:id])
+  end
+
+  def transfer_payment_params
+    params.permit(:id, :to_organisation_id, :amount)
   end
 
   def organisation_params
