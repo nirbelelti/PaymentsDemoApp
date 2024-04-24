@@ -25,9 +25,10 @@ class OrganisationFacade
     to_organisation = Organisation.find(to_organisation_id)
 
     ActiveRecord::Base.transaction do
-      payment = Payment.create!( organisation_id:from_organisation.id, sender_id: from_organisation.id, receiver_id: to_organisation.id, amount: amount)
+      payment = Payment.create!(organisation_id: from_organisation.id, sender_id: from_organisation.id,
+                                receiver_id: to_organisation.id, amount:)
       return payment
-    rescue => e
+    rescue StandardError => e
       return { error: e.message }
     end
   end
