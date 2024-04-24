@@ -7,5 +7,7 @@ RSpec.describe 'routes for Organisations', type: :routing do
     expect(get('/api/v1/organisations/1')).to route_to('api/v1/organisations#show', id: '1')
     expect(put('/api/v1/organisations/1')).to route_to('api/v1/organisations#update', id: '1')
     expect(delete('/api/v1/organisations/1')).to route_to('api/v1/organisations#destroy', id: '1')
+    expect(post: '/api/v1/organisations/1/transfer_payment').to route_to('api/v1/organisations#transfer_payment', id: '1')
+
   end
 end
