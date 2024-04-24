@@ -29,16 +29,16 @@ application up and running.
 ###  Database creation
 SQLite is a server-less relational database management system, which is embedded and doesn't require installation.
 To create the database, run the following command:
-rake db:create
+`rake db:create`
 ### Database initialization
 To initialize the database, run the following command:
-rake db:migrate
+`rake db:migrate`
 ### Seed the database
 for your convenience, the database is seeded with the required data utilizing Faker. To seed the database, run the following command:
 rake db:seed
 ## Testing
 This project utilizes RSpec for testing. To run the test suite, run the following command:
-rspec
+`rspec`
 ### How to run the test suite
 Run `rspec` to run the test suite.
 Running the test suite will run the tests for the models, requests, facades, and routing. However,
