@@ -81,6 +81,7 @@ This project can be deployed on Docker. To deploy the project on Docker, follow 
 - POST /api/v1/organisations
 - PUT /api/v1/organisations/:id
 - DELETE /api/v1/organisations/:id\
+- POST /api/v1/organisations/:id/transfer_payment
 
 The API endpoint `GET /api/v1/organisations` retrieves a list of all organisations along with information on their last
 three payment records within the attribute last_payments which includes date ,amount sender,receiver.
@@ -95,6 +96,11 @@ Attributes for the organisation model include:
 - vat_id: the VAT number of the organisation (*required*)
 - segment: the segment of the organisation (*required*)
 - crm_id: the CRM id of the organisation (*required*)
+
+Transfer payment endpoint allows you to transfer payment from one organisation to another. 
+it requires the following parameters:
+- amount: the amount of the payment (*required*)
+- receiver_id: the id of the receiver (*required*)
 
 #### Payments:
 - GET /api/v1/payments
