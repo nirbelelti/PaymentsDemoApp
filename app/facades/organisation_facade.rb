@@ -20,4 +20,16 @@ class OrganisationFacade
     Organisation.with_last_three_payments
   end
 
+  def self.transfer_payment(from_organisation_id, to_organisation_id, amount)
+    from_organisation = Organisation.find(from_organisation_id)
+    to_organisation = Organisation.find(to_organisation_id)
+
+    ActiveRecord::Base.transaction do
+      payment = Payment.create!( organisation_id:from_organisation.id, sender_id: from_organisation.id, receiver_id: to_organisation.id, amount: amount)
+      return payment
+    rescue => e
+      return { error: e.message }
+    end
+  end
+
 end
