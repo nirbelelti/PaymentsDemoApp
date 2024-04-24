@@ -40,7 +40,7 @@ class Api::V1::PaymentsController < ApplicationController
   def query_params
     params.fetch(:query, {}).permit(:organisation_id)
   end
-  
+
   def payment_params
     params.require(:payment).permit(:organisation_id,
                                     :sender_id,
