@@ -10,30 +10,48 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_18_100106) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_23_133107) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "organisations", force: :cascade do |t|
-    t.string "name"
-    t.integer "crm_id"
+    t.string "uuid", null: false
+    t.string "name", null: false
     t.string "address"
     t.string "country"
     t.string "province"
     t.string "zip"
-    t.string "vat_id"
-    t.string "email"
+    t.string "vat_id", null: false
+    t.string "email", null: false
     t.string "segment"
+    t.decimal "balance", precision: 10, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["uuid"], name: "index_organisations_on_uuid", unique: true
+    t.index ["vat_id"], name: "index_organisations_on_vat_id", unique: true
   end
 
   create_table "payments", force: :cascade do |t|
-    t.integer "organisation_id", null: false
-    t.integer "sender_id"
-    t.integer "receiver_id"
-    t.float "amount"
+    t.bigint "vendor_id", null: false
+    t.bigint "sender_id", null: false
+    t.bigint "receiver_id", null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["organisation_id"], name: "index_payments_on_organisation_id"
+    t.index ["receiver_id"], name: "index_payments_on_receiver_id"
+    t.index ["sender_id"], name: "index_payments_on_sender_id"
+    t.index ["vendor_id"], name: "index_payments_on_vendor_id"
   end
 
-  add_foreign_key "payments", "organisations"
+  create_table "vendors", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "uuid", null: false
+    t.string "email"
+    t.string "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uuid"], name: "index_vendors_on_uuid", unique: true
+  end
+
 end
