@@ -1,3 +1,5 @@
+require 'payment_engine'
+
 class PaymentFacade
 
   def self.all_payments(query_params = {})
@@ -11,18 +13,9 @@ class PaymentFacade
   def self.find_payment(payment_id)
     Payment.find(payment_id)
   end
+
   def self.create_payment(payment_params)
-    Payment.create!(payment_params)
+    PaymentEngine::PaymentInitiator.initiate_payment(payment_params)
   end
 
-  def self.update_payment(payment_id, payment_params)
-    payment = Payment.find(payment_id)
-    payment.update!(payment_params)
-    payment
-  end
-
-  def self.delete_payment(payment_id)
-    payment = Payment.find(payment_id)
-    payment.destroy!
-  end
 end
