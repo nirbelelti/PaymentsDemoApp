@@ -38,13 +38,13 @@ class Api::V1::PaymentsController < ApplicationController
   end
 
   def query_params
-    params.fetch(:query, {}).permit(:organisation_id)
+    params.fetch(:query, {}).permit(:organisation_uuid)
   end
 
   def payment_params
-    params.require(:payment).permit(:organisation_id,
-                                    :sender_id,
-                                    :receiver_id,
-                                    :amount)
+    params.permit(:vendor_uuid,
+                  :sender_uuid,
+                  :receiver_uuid,
+                  :amount)
   end
 end
