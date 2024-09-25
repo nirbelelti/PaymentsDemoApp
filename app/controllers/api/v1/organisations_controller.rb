@@ -8,6 +8,11 @@ class Api::V1::OrganisationsController < ApplicationController
     render json: { payments: organisations, metadata: pagy_metadata(@pagy) }
   end
 
+  def payments_activity
+    @pagy,  organisations = pagy(OrganisationFacade.get_all_organisations_with_last_payments)
+    render json: { payments: organisations, metadata: pagy_metadata(@pagy) }
+  end
+
   def show
     render json: @organisation
   end
