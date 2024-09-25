@@ -16,7 +16,11 @@ class OrganisationFacade
     Organisation.find(id)
   end
 
-  def self.all_organisations
+  def self.get_index
+    Organisation.all
+  end
+
+  def self.get_all_organisations_with_last_payments
     Organisation.with_last_three_payments
   end
 
