@@ -4,7 +4,8 @@ Rails.application.routes.draw do
       resources :organisations do
         post :transfer_payment, on: :member
       end
-      resources :payments
+      resources :organisations
+      get 'organisations_activity', to: 'organisations#payments_activity'
     end
   end
   mount PaymentEngine::Engine, at: '/payment_engine'
