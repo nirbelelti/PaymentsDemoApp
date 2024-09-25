@@ -60,3 +60,5 @@ group :test do
   gem 'database_cleaner'
 end
 
+
+gem 'payment_engine', path: './payment_engine'
