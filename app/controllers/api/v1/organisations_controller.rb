@@ -4,8 +4,8 @@ class Api::V1::OrganisationsController < ApplicationController
   before_action :set_organisation, only: %i[show update destroy]
 
   def index
-    organisations = OrganisationFacade.all_organisations
-    render json: organisations
+    @pagy, organisations = pagy(OrganisationFacade.get_index)
+    render json: { payments: organisations, metadata: pagy_metadata(@pagy) }
   end
 
   def show
