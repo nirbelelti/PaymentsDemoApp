@@ -14,21 +14,36 @@ if Rails.env.development?
         name: Faker::Company.unique.name,
         address: Faker::Address.street_address,
         vat_id: Faker::Number.unique.number(digits: 10),
-        crm_id: Faker::Number.unique.number(digits: 10),
         email: Faker::Internet.unique.email,
-        segment: Faker::Commerce.department
+        segment: Faker::Commerce.department,
+        balance: rand(1000.0..10000.0),
+        uuid: Faker::Number.unique.number(digits: 5)
       )
     end
   end
-  if Payment.count == 0
-    20.times do
-      Payment.create!(
-        amount: rand(100.0..1000.0),
-        sender_id: Faker::Number.unique.number(digits: 5),
-        receiver_id: Faker::Number.unique.number(digits: 5),
-        organisation_id: Organisation.order('RANDOM()').first.id
+  if Vendor.count == 0
+    5.times do
+      Vendor.create!(
+        name: Faker::Company.unique.name,
+        email: Faker::Internet.unique.email,
+        uuid: Faker::Number.unique.number(digits: 5)
       )
     end
   end
 
+  if Payment.count == 0
+    puts 'Creating payments...'
+    puts Organisation.order('RANDOM()').first.inspect
+    20.times do
+      Payment.create!(
+        amount: rand(100.0..1000.0),
+        sender_id: Organisation.order('RANDOM()').first.id,
+        receiver_id: Organisation.order('RANDOM()').first.id,
+        vendor_id: Vendor.order('RANDOM()').first.id,
+        status: Payment.statuses.keys.sample
+      )
+    end
+  end
+
+  puts 'Seeds created successfully'
 end
