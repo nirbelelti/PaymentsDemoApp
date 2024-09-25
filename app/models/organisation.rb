@@ -1,5 +1,6 @@
 class Organisation < ApplicationRecord
-  has_many :payments
+  has_many :payments,  foreign_key: :sender_id, dependent: :destroy
+  has_many :payments,  foreign_key: :receiver_id, dependent: :destroy
 
   scope :with_last_three_payments, -> {
     organisations_with_payments = includes(:payments).to_a
