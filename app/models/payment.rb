@@ -1,3 +1,4 @@
+require 'singleton'
 class Payment < ApplicationRecord
   include Singleton
   belongs_to :vendor
