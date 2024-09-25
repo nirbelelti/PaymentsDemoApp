@@ -3,8 +3,8 @@ require 'payment_engine'
 class PaymentFacade
 
   def self.all_payments(query_params = {})
-    if query_params && query_params[:organisation_id].present?
-      Payment.where(organisation_id: query_params[:organisation_id])
+    if query_params && query_params[:organisation_uuid].present?
+      Payment.where(organisation_uuid: query_params[:organisation_uuid])
     else
       Payment.all
     end
