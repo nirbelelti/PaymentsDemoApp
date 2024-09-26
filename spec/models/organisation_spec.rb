@@ -17,7 +17,8 @@ RSpec.describe Organisation, type: :model do
   end
 
   describe 'Associations' do
-    it { should have_many(:payments) }
+    it { should have_many(:received_payments) }
+    it { should have_many(:sent_payments) }
   end
 
   describe 'Scopes' do

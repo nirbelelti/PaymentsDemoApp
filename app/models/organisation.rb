@@ -1,6 +1,6 @@
 class Organisation < ApplicationRecord
-  has_many :payments,  foreign_key: :sender_id, dependent: :destroy
-  has_many :payments,  foreign_key: :receiver_id, dependent: :destroy
+  has_many :sent_payments, class_name: 'Payment', foreign_key: :sender_id, dependent: :destroy
+  has_many :received_payments, class_name: 'Payment', foreign_key: :receiver_id, dependent: :destroy
 
   scope :with_last_three_payments, -> {
     subquery = Payment.select('payments.*, ROW_NUMBER() OVER (PARTITION BY sender_id ORDER BY payments.created_at DESC) AS row_num')
