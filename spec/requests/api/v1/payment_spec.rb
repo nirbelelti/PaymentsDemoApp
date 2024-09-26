@@ -1,15 +1,18 @@
 require 'rails_helper'
 
-RSpec.describe "Api::V1::Payments", type: :request do
+RSpec.describe 'Api::V1::Payments', type: :request do
   let!(:payments) { FactoryBot.create_list(:payment, 40) }
+  let!(:organisation) { FactoryBot.create(:organisation) }
+  let!(:vendor) { FactoryBot.create(:vendor) }
   let!(:payment) { payments.first }
-  let!(:organisation) { payment.organisation }
+  let!(:sender) { payment.sender }
+  let!(:reciver) { payments.last.receiver }
 
   def json
     JSON.parse(response.body)
   end
 
-  describe "GET /index" do
+  describe 'GET /index' do
     before { get '/api/v1/payments' }
 
     it 'returns payments' do
@@ -32,21 +35,23 @@ RSpec.describe "Api::V1::Payments", type: :request do
     end
 
     it 'filters the results by organisation_id' do
-      get '/api/v1/payments', params: { query: {organisation_id: organisation.id} }
-      expect(json['payments'].size).to eq(1)
+      get '/api/v1/payments', params: { organisation_id: sender.id }
+      expect(json['payments'].size).to be > 0
+      expect(json['payments'].size).to be < payments.size
+      json['payments'].each do |payment|
+        expect(payment['sender_id'] == sender.id || payment['receiver_id'] == sender.id).to be true
+      end
     end
   end
 
-  describe "GET /show" do
+  describe 'GET /show' do
     before { get "/api/v1/payments/#{payment.id}" }
 
     it 'returns the payment' do
       expect(json).not_to be_empty
       expect(json['id']).to eq(payment.id)
-      expect(json['organisation_id']).to eq(payment.organisation_id)
       expect(json['sender_id']).to eq(payment.sender_id)
       expect(json['receiver_id']).to eq(payment.receiver_id)
-      expect(json['amount']).to eq(payment.amount)
     end
 
     it 'returns status code 200' do
@@ -54,18 +59,16 @@ RSpec.describe "Api::V1::Payments", type: :request do
     end
   end
 
-  describe "POST /create" do
-    let(:valid_attributes) { FactoryBot.attributes_for(:payment, organisation_id: organisation.id) }
+  describe 'POST /create' do
+    let(:valid_attributes) { { sender_uuid: organisation.uuid, receiver_uuid: organisation.uuid, vendor_uuid: vendor.uuid, amount: 1 } }
     let(:invalid_attributes) { valid_attributes.merge(amount: nil) }
 
     context 'with valid attributes' do
-      before { post '/api/v1/payments', params: { payment: valid_attributes } }
+      before { post '/api/v1/payments', params: valid_attributes }
 
       it 'creates an payment' do
-        expect(json['organisation_id']).to eq(valid_attributes[:organisation_id])
-        expect(json['sender_id']).to eq(valid_attributes[:sender_id])
-        expect(json['receiver_id']).to eq(valid_attributes[:receiver_id])
-        expect(json['amount']).to eq(valid_attributes[:amount])
+        expect(json['status']).to eq('success')
+        expect(json['message']).to eq('Payment processed successfully')
       end
 
       it 'returns status code 201' do
@@ -74,24 +77,35 @@ RSpec.describe "Api::V1::Payments", type: :request do
     end
 
     context 'with invalid attributes' do
-      before { post '/api/v1/payments', params: { payment: invalid_attributes } }
+      before { post '/api/v1/payments', params: invalid_attributes }
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
       end
     end
   end
 
-  describe "PATCH /update" do
+  describe 'POST /refund' do
 
-    context 'with valid attributes' do
-      before { patch "/api/v1/payments/#{payment.id}", params: { payment: { id: 1, sender_id: 22222 } } }
-
-      it 'updates the payment' do
-        expect(json['sender_id']).to eq(22222)
+    context 'with valid request' do
+      before do
+        payment.sender.update(balance: 100000)
+        payment.receiver.update(balance: 100000)
       end
 
-      it 'returns status code 200' do
-        expect(response).to have_http_status(200)
+      it 'returns refund payment' do
+        post "/api/v1/payments/#{payment.id}/refund"
+        expect(json['status']).to eq('success')
+        expect(json['message']).to eq('Payment processed successfully')
+        payment.reload
+        expect(payment.status).to eq('refunded')
+      end
+
+      it 'does not refund payment to times' do
+        post "/api/v1/payments/#{payment.id}/refund"
+        payment.reload
+        post "/api/v1/payments/#{payment.id}/refund"
+        expect(json['status']).to eq('failed')
+        expect(json['message']).to eq('Payment already refunded')
       end
     end
   end
