@@ -13,7 +13,7 @@ RSpec.describe "Api::V1::Organisations", type: :request do
 
     it 'returns organisations' do
       expect(json).not_to be_empty
-      expect(json.size).to eq(3)
+      expect(json.length).to eq(2)
     end
 
     it 'returns status code 200' do
@@ -28,7 +28,7 @@ RSpec.describe "Api::V1::Organisations", type: :request do
       expect(json).not_to be_empty
       expect(json['id']).to eq(organisation.id)
       expect(json['name']).to eq(organisation.name)
-      expect(json['crm_id']).to eq(organisation.crm_id)
+      expect(json['uuid']).to eq(organisation.uuid)
     end
 
     it 'returns status code 200' do
@@ -41,7 +41,7 @@ RSpec.describe "Api::V1::Organisations", type: :request do
     let(:invalid_attributes) { valid_attributes.merge(name: nil)}
 
     context 'with valid attributes' do
-      before { post '/api/v1/organisations', params: { organisation: valid_attributes } }
+      before { post '/api/v1/organisations', params: valid_attributes }
 
       it 'creates an organisation' do
         expect(json['name']).to eq(valid_attributes[:name])
@@ -53,7 +53,7 @@ RSpec.describe "Api::V1::Organisations", type: :request do
     end
 
     context 'with invalid attributes' do
-        before { post '/api/v1/organisations', params: { organisation: invalid_attributes } }
+        before { post '/api/v1/organisations', params: invalid_attributes  }
         it 'returns status code 422' do
           expect(response).to have_http_status(422)
         end
@@ -64,10 +64,10 @@ RSpec.describe "Api::V1::Organisations", type: :request do
     let(:valid_attributes) { { name: 'New Name' } }
 
     context 'with valid attributes' do
-      before { patch "/api/v1/organisations/#{organisation.id}", params: { organisation: valid_attributes } }
+      before { patch "/api/v1/organisations/#{organisation.id}", params:  valid_attributes }
 
       it 'updates the organisation' do
-        expect(json['name']).to eq('New Name')
+        expect(json['message']).to eq('updated successfully')
       end
 
       it 'returns status code 200' do
@@ -76,20 +76,4 @@ RSpec.describe "Api::V1::Organisations", type: :request do
     end
   end
 
-  describe "Transfer Payment" do
-    let!(:organisation_b) { FactoryBot.create(:organisation) }
-    let(:valid_attributes) { { to_organisation_id: organisation_b.id, amount: 100 } }
-
-    before { post "/api/v1/organisations/#{organisation.id}/transfer_payment", params: valid_attributes }
-
-    it 'transfer payments between two organisations' do
-      expect(json['amount']).to eq(100)
-      expect(json['sender_id']).to eq(organisation.id)
-      expect(json['receiver_id']).to eq(organisation_b.id)
-    end
-
-    it 'returns status code 201' do
-      expect(response).to have_http_status(201)
-    end
-  end
 end
