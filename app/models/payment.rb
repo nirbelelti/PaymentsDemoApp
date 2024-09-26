@@ -1,9 +1,7 @@
-require 'singleton'
 class Payment < ApplicationRecord
-  include Singleton
   belongs_to :vendor
-  belongs_to :sender, class_name: 'Organisation'
-  belongs_to :receiver, class_name: 'Organisation'
+  belongs_to :sender, class_name: 'Organisation' , foreign_key: :sender_id
+  belongs_to :receiver, class_name: 'Organisation', foreign_key: :receiver_id
 
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :sender_id, presence: true
