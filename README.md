@@ -1,12 +1,18 @@
-# README
+# PaymentApplicationDemo 
+***PaymentApplicationDemo*** is a Ruby on Rails application built to facilitate payment processing between organizations.
+It offers a set of APIs to initiate and manage payments, as well as process refunds. This project showcases the use of a
+payment engine that is decoupled from the main application, providing several key benefits:
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
+- ***Isolation:*** The payment engine's codebase is separated from the main application, making it easier to manage and maintain.
+- ***Reusability:*** The engine can be reused across multiple projects without duplicating code.
+- ***Versioning:*** The engine can be versioned independently from the main application, enabling better control over dependencies and updates.
+- 
+Additionally, the application follows a facade pattern to separate business logic from controllers, adding an extra layer of flexibility and maintainability.
 ## SYSTEM REQUIREMENTS
 
 ### Ruby version 3.3.0
 ### Rails version 7.1.3
+### PsotgresSQL 13.3
 #### or
 ### Docker ( If you want to run the project on Docker)
 
@@ -18,16 +24,154 @@ application up and running.
 4. Run `rails db:migrate` to run the migrations
 5. Run `rails db:seed` to seed the database with the required data
 6. Run `rails s` to start the server
-#### Alternatively, you can run this project on Docker by running the following commands:
-1. run `docker build -t wildpayments-docker` to build the docker image
-2. run `docker run -p 3000:3000 wildpayments-docker` to run the docker image
 
 ## System dependencies
 1. Ruby version 3.3.0
 2. Rails version 7.1.3
+## API endpoints
+#### Payments:
+```
+- GET /api/v1/payments
+- Response :{Payments: [{
+            "id": 1,
+            "vendor_id": 1,
+            "sender_id": 5,
+            "receiver_id": 1,
+            "amount": "248.26",
+            "status": "pending",
+            "created_at": "2024-09-26T06:32:05.464Z",
+            "updated_at": "2024-09-26T06:32:05.464Z"
+        },{....}], metadata: {total: 1, page: 1, per_page: 20, total_pages: 1, next_page: nil, prev_page: nil}}
+- Exepted request body for filtering: {"organisation_id": 1} will return all payments from/to the organisation with id 1
+```
+```
+- GET /api/v1/payments/:id
+- Respose: {
+            "id": 1,
+            "vendor_id": 1,
+            "sender_id": 5,
+            "receiver_id": 1,
+            "amount": "248.26",
+            "status": "pending",
+            "created_at": "2024-09-26T06:32:05.464Z",
+            "updated_at": "2024-09-26T06:32:05.464Z"
+        }
+```
+```
+POST /api/v1/payments
+Request params: {
+                "amount": 248.26,
+                "sender_uuid": 5ssjll-ss-nn-ss,
+                "receiver_uuid": 1jll-ss-nn-ss,
+                "vendor_uuid": 1a-ss-nn-ss
+            }
+Response 200 : {
+{
+    "status": "success",
+    "message": "Payment initiated successfully",
+}
+Response 422 : {
+{
+    "status": "failed",
+    "message": "Invalid sender or receiver or vendor" OR "Insufficient balance"
+}      
+```
+```
+POST /api/v1/payments/:id/refund
+Response 200 : {
+{
+    "status": "success",
+    "message": "Payment initiated successfully",
+}
+- response 422 : {
+{
+    "status": "failed",
+    "message": "Payment not found" OR "Payment already refunded"
+}      
+```
+The endpoint `GET /api/v1/payments` allows you to retrieve all payments. The response will be paginated with 20 records
+per page. You can also filter the results by passing `{"organisation_id": some id}}` in the request body to
+filter by organisation_id.
+
+#### Attributes for the payment model include:
+- amount: the amount of the payment (*required*)
+- sender_id: the id of the sender (*required*)
+- receiver_id: the id of the receiver (*required*)
+- organisation_id: the id of the organisation (*required*)
+
+
+### Organisations:
+- ```GET /api/v1/organisations```
+- ```GET /api/v1/organisations/:id```
+- ```POST /api/v1/organisations```
+- ```PUT /api/v1/organisations/:id```
+- ```DELETE /api/v1/organisations/:id```
+  Attributes for the organisation model include:
+- name: the name of the organisation (*required*)
+- address: the address of the organisation(*required*)
+- email: the email of the organisation (*required*)
+- country: the country of the organisation
+- province: the province of the organisation
+- zip: the zip code of the organisation
+- vat_id: the VAT number of the organisation (*required*)
+- segment: the segment of the organisation (*required*)
+### View Last Payments
+```GET /api/v1/organisations_activity```
+Returning index of all organisations with their last three payments under the key ```last_three_payments```
+```Response :{"payments": [
+  {
+  "id": 1,
+  "uuid": "74960",
+  "name": "My update name",
+  "address": "4835 Alonso Ways",
+  "country": null,
+  "province": null,
+  "zip": null,
+  "vat_id": "9050849648",
+  "email": "
+```Response :{"payments": [
+  {
+  "id": 1,
+  "uuid": "74960",
+  "name": "My update name",
+  "address": "4835 Alonso Ways",
+  "country": null,
+  "province": null,
+  "zip": null,
+  "vat_id": "9050849648",
+  "email": "ndddd@ddws.dd",
+  "segment": "Books, Outdoors & Industrial",
+  "balance": "4955.04",
+  "created_at": "2024-09-23T16:14:23.449Z",
+  "updated_at": "2024-09-25T18:45:39.260Z",
+  "last_three_payments": [
+  {
+  "id": 19,
+  "created_at": "2024-09-26T06:32:05.548668",
+  "amount": 420.97,
+  "receiver_id": 5
+  },
+  {
+  "id": 11,
+  "created_at": "2024-09-26T06:32:05.514213",
+  "amount": 820.94,
+  "receiver_id": 6
+  }
+  ]
+  },...], metadata: {total: 1, page: 1, per_page: 20, total_pages: 1, next_page: nil, prev_page: nil}}
+  ```
+
+
+## Pagination
+The API endpoints that return multiple records are paginated. The default number of records per page is 20, but you can change
+it use Pagy gem. where multiple records queried, you can pass the page number and the number of records per page as query parameters in the request URL.
+The response will include metadata with the total number of records, the total number of
+pages, page number, the number of records per page, and next and previous page links.
+
+
+
 ## Configuration
 ###  Database creation
-SQLite is a server-less relational database management system, which is embedded and doesn't require installation.
 To create the database, run the following command:
 `rake db:create`
 ### Database initialization
@@ -68,55 +212,5 @@ This project can be deployed on Heroku. To deploy the project on Heroku, follow 
 1. Enable the rack-cors gem in the Gemfile and run `bundle install` before deploying to the live server to avoid CORS issues.
 2. Ensure that CORS issues are avoided when the API is called from the frontend app by setting it to true in the cors.rb file in the config/initializers folder.
 3. In the cors.rb initializer file, you can specify the origins that are allowed to make requests, what resources they can request, and any specific HTTP headers or HTTP methods they can use.
-### Docker (local deployment)
-This project can be deployed on Docker. To deploy the project on Docker, follow the steps below:
-1. Run `docker build -t wildpayments-docker` to build the docker image  
-2. Run `docker run -p 3000:3000 wildpayments-docker` to run the docker image
 
 
-### API endpoints
-#### Organisations:
-- GET /api/v1/organisations
-- GET /api/v1/organisations/:id 
-- POST /api/v1/organisations
-- PUT /api/v1/organisations/:id
-- DELETE /api/v1/organisations/:id\
-- POST /api/v1/organisations/:id/transfer_payment
-
-The API endpoint `GET /api/v1/organisations` retrieves a list of all organisations along with information on their last
-three payment records within the attribute last_payments which includes date ,amount sender,receiver.
-
-Attributes for the organisation model include:
-- name: the name of the organisation (*required*)
-- address: the address of the organisation(*required*)
-- email: the email of the organisation (*required*)
-- country: the country of the organisation
-- province: the province of the organisation
-- zip: the zip code of the organisation
-- vat_id: the VAT number of the organisation (*required*)
-- segment: the segment of the organisation (*required*)
-- crm_id: the CRM id of the organisation (*required*)
-
-The endpoint `POST /api/v1/organisations/:id/transfer_payment` allows you to transfer payment from one organisation to another. 
-This action is based on the assumption that they have the resources to make the payment. 
-To transfer payment, it requires the following parameters:
-- amount: the amount of the payment (*required*)
-- receiver_id: the id of the receiver (*required*)
-
-#### Payments:
-- GET /api/v1/payments
-- GET /api/v1/payments/:id
-- POST /api/v1/payments
-- PUT /api/v1/payments/:id
-
-The endpoint `GET /api/v1/payments` allows you to retrieve all payments. The response will be paginated with 20 records 
-per page. You can also filter the results by passing `{"query":{"organisation_id": some id}}` in the request body to 
-filter by organisation_id. The response will include metadata with the total number of records, the total number of 
-pages, page number, the number of records per page, and next and previous page links.
-
-Attributes for the payment model include:
-- amount: the amount of the payment (*required*)
-- sender_id: the id of the sender (*required*)
-- receiver_id: the id of the receiver (*required*)
-- organisation_id: the id of the organisation (*required*)
- 
