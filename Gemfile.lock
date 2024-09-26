@@ -1,5 +1,6 @@
-PATH
-  remote: payment_engine
+GIT
+  remote: https://github.com/nirbelelti/payment_engine.git
+  revision: 17ebf4c4ff1545a8d370ae6f7abb139241c7bbc1
   specs:
     payment_engine (0.1.0)
       rails (>= 7.1.3.2)

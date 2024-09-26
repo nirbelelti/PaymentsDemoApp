@@ -61,4 +61,4 @@ group :test do
 end
 
 
-gem 'payment_engine', path: './payment_engine'
+gem 'payment_engine', git: 'https://github.com/nirbelelti/payment_engine.git'
