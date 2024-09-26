@@ -54,4 +54,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_23_133107) do
     t.index ["uuid"], name: "index_vendors_on_uuid", unique: true
   end
 
+  add_foreign_key "payments", "organisations", column: "receiver_id"
+  add_foreign_key "payments", "organisations", column: "sender_id"
+  add_foreign_key "payments", "vendors"
 end
