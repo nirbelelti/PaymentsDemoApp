@@ -10,6 +10,8 @@ RSpec.describe Payment, type: :model do
   end
 
   describe "Associations" do
-    it { should belong_to(:organisation) }
+    it { should belong_to(:sender) }
+    it { should belong_to(:receiver) }
+    it { should belong_to(:vendor) }
   end
 end
