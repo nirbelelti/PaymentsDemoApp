@@ -13,8 +13,6 @@ Additionally, the application follows a facade pattern to separate business logi
 ### Ruby version 3.3.0
 ### Rails version 7.1.3
 ### PsotgresSQL 13.3
-#### or
-### Docker ( If you want to run the project on Docker)
 
 ## INSTALLATION
 
@@ -32,7 +30,7 @@ Additionally, the application follows a facade pattern to separate business logi
 #### Payments:
 ```
 - GET /api/v1/payments
-- Response :{Payments: [{
+    Response :{Payments: [{
             "id": 1,
             "vendor_id": 1,
             "sender_id": 5,
@@ -42,11 +40,13 @@ Additionally, the application follows a facade pattern to separate business logi
             "created_at": "2024-09-26T06:32:05.464Z",
             "updated_at": "2024-09-26T06:32:05.464Z"
         },{....}], metadata: {total: 1, page: 1, per_page: 20, total_pages: 1, next_page: nil, prev_page: nil}}
-- Exepted request body for filtering: {"organisation_id": 1} will return all payments from/to the organisation with id 1
-```
+````
+        
+- Exepted request body for filtering: ```{"organisation_id": 1} ``` will return all payments from/to the organisation with id 1
+
 ```
 - GET /api/v1/payments/:id
-- Respose: {
+    Respose: {
             "id": 1,
             "vendor_id": 1,
             "sender_id": 5,
@@ -59,35 +59,35 @@ Additionally, the application follows a facade pattern to separate business logi
 ```
 ```
 POST /api/v1/payments
-Request params: {
+  Request params: {
                 "amount": 248.26,
                 "sender_uuid": 5ssjll-ss-nn-ss,
                 "receiver_uuid": 1jll-ss-nn-ss,
                 "vendor_uuid": 1a-ss-nn-ss
             }
-Response 200 : {
-{
+  Response 200 : 
+  {
     "status": "success",
     "message": "Payment initiated successfully",
-}
-Response 422 : {
-{
+  }
+  Response 422 : 
+  {
     "status": "failed",
     "message": "Invalid sender or receiver or vendor" OR "Insufficient balance"
-}      
+  }      
 ```
 ```
 POST /api/v1/payments/:id/refund
-Response 200 : {
-{
+  Response 200 : 
+  {
     "status": "success",
     "message": "Payment initiated successfully",
-}
-- response 422 : {
-{
+  }
+  Response 422 : {
+  {
     "status": "failed",
     "message": "Payment not found" OR "Payment already refunded"
-}      
+  }      
 ```
 The endpoint `GET /api/v1/payments` allows you to retrieve all payments. The response will be paginated with 20 records
 per page. You can also filter the results by passing `{"organisation_id": some id}}` in the request body to
@@ -106,7 +106,8 @@ filter by organisation_id.
 - ```POST /api/v1/organisations```
 - ```PUT /api/v1/organisations/:id```
 - ```DELETE /api/v1/organisations/:id```
-  Attributes for the organisation model include:
+
+Attributes for the organisation model include:
 - name: the name of the organisation (*required*)
 - address: the address of the organisation(*required*)
 - email: the email of the organisation (*required*)
