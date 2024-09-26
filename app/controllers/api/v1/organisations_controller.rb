@@ -5,11 +5,11 @@ class Api::V1::OrganisationsController < ApplicationController
 
   def index
     @pagy, organisations = pagy(OrganisationFacade.get_index)
-    render json: { payments: organisations, metadata: pagy_metadata(@pagy) }
+    render json: { organisations: organisations, metadata: pagy_metadata(@pagy) }
   end
 
   def payments_activity
-    @pagy,  organisations = pagy(OrganisationFacade.get_all_organisations_with_last_payments)
+    @pagy, organisations = pagy(OrganisationFacade.get_all_organisations_with_last_payments)
     render json: { payments: organisations, metadata: pagy_metadata(@pagy) }
   end
 
@@ -18,15 +18,20 @@ class Api::V1::OrganisationsController < ApplicationController
   end
 
   def create
-    organisation = OrganisationFacade.create_organisation(organisation_params)
-    render json: organisation, status: :created
+    org = OrganisationFacade.create_organisation(organisation_params)
+    if org[:status] == :created
+      render json: org[:organisation], status: :created
+    else
+      render json: org[:errors], status: :unprocessable_entity
+    end
   end
 
   def update
-    if OrganisationFacade.update_organisation(@organisation, organisation_params)
-      render json: @organisation
+    result = OrganisationFacade.update_organisation(@organisation, organisation_params)
+    if result[:status] == :updated
+      render json: { message: 'updated successfully' }, status: :ok
     else
-      render json: @organisation.errors, status: :unprocessable_entity
+      render json: result[:errors], status: :unprocessable_entity
     end
   end
 
@@ -35,9 +40,8 @@ class Api::V1::OrganisationsController < ApplicationController
   end
 
   def transfer_payment
-    payment = OrganisationFacade.transfer_payment(transfer_payment_params[:id], 
-                                                  transfer_payment_params[:to_organisation_id],
-                                                  transfer_payment_params[:amount])
+    payment = OrganisationFacade.transfer_payment(transfer_payment_params[:id],
+                                                  transfer_payment_params[:to_organisation_id], transfer_payment_params[:amount])
     if payment.errors.any?
       render json: payment.errors, status: :unprocessable_entity
     else
@@ -56,12 +60,12 @@ class Api::V1::OrganisationsController < ApplicationController
   end
 
   def organisation_params
-    params.require(:organisation).permit(:name,
-                                         :address,
-                                         :vat_id,
-                                         :crm_id,
-                                         :email,
-                                         :segment)
+    params.permit(:name,
+                  :address,
+                  :vat_id,
+                  :crm_id,
+                  :email,
+                  :segment)
   end
 
 end
