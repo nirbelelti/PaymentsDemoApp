@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :payments, except: [:update, :edit] do
-        post :refund_payment, on: :member
+        post :refund, on: :member
       end
       resources :organisations
       get 'organisations_activity', to: 'organisations#payments_activity'
