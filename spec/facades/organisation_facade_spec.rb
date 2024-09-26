@@ -7,7 +7,7 @@ RSpec.describe OrganisationFacade, type: :facade do
 
   describe '.all_organisations' do
     it 'returns all organisations' do
-      expect(described_class.all_organisations.size).to eq(3)
+      expect(described_class.get_index.size).to eq(organisations.size)
     end
   end
 
@@ -38,10 +38,18 @@ RSpec.describe OrganisationFacade, type: :facade do
     end
   end
 
-  describe '.transfer_payment' do
-    let!(:organisation_b) { FactoryBot.create(:organisation) }
+  describe '.get_all_organisations_with_last_payments' do
     it 'transfer payments between two organisations' do
-      expect {described_class.transfer_payment(organisation.id, organisation_b.id, 100) }.to change(Payment, :count).by(1)
+      organisations.each do|org|
+        3.times do
+          Payment.create!( sender: org, receiver: organisations.sample, amount: Faker::Number.decimal(l_digits: 3, r_digits: 2), status: Payment.statuses.keys.sample,vendor_id: FactoryBot.create(:vendor).id )
+        end
+      end
+      organisations =described_class.get_all_organisations_with_last_payments
+      expect(organisations.length).to eq(organisations.length)
+      organisations.each do |org|
+        expect(org.last_three_payments.length).to eq(3)
+      end
     end
   end
 end
