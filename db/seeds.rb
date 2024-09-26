@@ -33,12 +33,11 @@ if Rails.env.development?
 
   if Payment.count == 0
     puts 'Creating payments...'
-    puts Organisation.order('RANDOM()').first.inspect
     20.times do
       Payment.create!(
         amount: rand(100.0..1000.0),
         sender_id: Organisation.order('RANDOM()').first.id,
-        receiver_id: Organisation.order('RANDOM()').first.id,
+        receiver_id: Organisation.order('RANDOM()').last.id,
         vendor_id: Vendor.order('RANDOM()').first.id,
         status: Payment.statuses.keys.sample
       )
