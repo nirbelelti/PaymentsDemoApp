@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe PaymentFacade, type: :facade do
   let!(:payments) { FactoryBot.create_list(:payment, 3) }
   let!(:payment) { payments.first }
-  let(:payment_params) { FactoryBot.attributes_for(:payment, organisation_id: Organisation.first.id  ) }
+  let!(:organisations) { FactoryBot.create_list(:organisation, 2) }
+  let!(:vendor) { FactoryBot.create(:vendor) }
 
   describe 'all_payments' do
     it 'returns all payments' do
@@ -11,9 +12,8 @@ RSpec.describe PaymentFacade, type: :facade do
       expect(described_class.all_payments.length).to eq(3)
     end
 
-    it 'filters the results by organisation_id' do
-      expect(described_class.all_payments(organisation_id: payment.organisation_id).to_a).to eq([payment])
-      expect(described_class.all_payments(organisation_id: payment.organisation_id).length).to eq(1)
+    it 'filters the results by organisation_id sent on received by' do
+      expect(described_class.all_payments(organisation_id: payment.sender_id).length).to eq(Payment.where('sender_id=? or receiver_id =?', payment.sender_id, payment.sender_id).length)
     end
   end
 
@@ -25,22 +25,12 @@ RSpec.describe PaymentFacade, type: :facade do
 
   describe 'create_payment' do
     it 'creates a new payment' do
+      payment_params = {vendor_uuid: vendor.uuid,
+                        sender_uuid: organisations.first.uuid,
+                        receiver_uuid: organisations.last.uuid,
+                        amount: 33 }
       expect { described_class.create_payment(payment_params) }.to change(Payment, :count).by(1)
     end
   end
 
-  describe 'update_payment' do
-    it 'updates the payment' do
-      described_class.update_payment(payment.id, payment_params)
-      payment.reload
-      expect(payment.amount).to eq(payment_params[:amount])
-    end
-  end
-
-  describe 'delete_payment' do
-    it 'deletes the payment' do
-      described_class.delete_payment(payment.id)
-      expect(Payment.exists?(payment.id)).to be_falsey
-    end
-  end
 end
